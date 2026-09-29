@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Aiden Tutoring</title>
 <link id="favicon" rel="icon" href="">
+<script src="/uv/uv.bundle.js"></script>
+<script src="/uv/uv.config.js"></script>
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;width:100%;min-height:100%;font-family:Arial,Helvetica,sans-serif}
@@ -78,6 +80,20 @@ url("/img/cocofanto-bg.jpg") center/cover no-repeat;opacity:.82;z-index:0}
   .setting{align-items:flex-start;flex-direction:column}
 }
 </style>
+<script>
+window.addEventListener("DOMContentLoaded", () => {
+  if (!window.__uv$config) {
+    const s1=document.createElement("script");
+    s1.src="uv/uv.bundle.js";
+    s1.onload=()=>{
+      const s2=document.createElement("script");
+      s2.src="uv/uv.config.js";
+      document.head.appendChild(s2);
+    };
+    document.head.appendChild(s1);
+  }
+});
+</script>
 </head>
 <body>
 
@@ -133,6 +149,7 @@ url("/img/cocofanto-bg.jpg") center/cover no-repeat;opacity:.82;z-index:0}
     <div class="c-top">
       <div class="c-brand"><img src="/img/cocofanto.png" alt=""><span>Cocofanto</span></div>
       <div class="c-actions">
+        <button class="glass" onclick="openPreviousSite()">← Previous site</button>
         <button class="glass" onclick="showCocoSettings()">Settings</button>
         <button class="glass" onclick="backToTutoring()">← Back to Aiden Tutoring</button>
       </div>
@@ -149,9 +166,9 @@ url("/img/cocofanto-bg.jpg") center/cover no-repeat;opacity:.82;z-index:0}
         </div>
 
         <div class="shortcuts">
-          <button class="glass" onclick="location.href='https://www.youtube.com/'">▶ YouTube</button>
-          <button class="glass" onclick="location.href='https://www.wikipedia.org/'">Wikipedia</button>
-          <button class="glass" onclick="location.href='https://duckduckgo.com/'">DuckDuckGo</button>
+          <button class="glass" onclick="navigateViaExistingProxy('https://www.youtube.com/')">▶ YouTube</button>
+          <button class="glass" onclick="navigateViaExistingProxy('https://www.wikipedia.org/')">Wikipedia</button>
+          <button class="glass" onclick="navigateViaExistingProxy('https://duckduckgo.com/')">DuckDuckGo</button>
         </div>
 
         <div class="settings hidden" id="cocoSettings">
@@ -213,7 +230,13 @@ function showCocoSettings(){
   document.getElementById("cocoSettings").classList.toggle("hidden");
 }
 
-function openCocofanto(){
+function openCocofanto(addHistory = true){
+  sessionStorage.setItem("cocofantoView","1");
+
+  if(addHistory && location.hash !== "#cocofanto"){
+    history.pushState({view:"cocofanto"}, "", "#cocofanto");
+  }
+
   document.getElementById("tutoring").classList.add("hidden");
   document.getElementById("cocofanto").classList.remove("hidden");
   setCocofantoIdentity();
@@ -222,11 +245,37 @@ function openCocofanto(){
 }
 
 function backToTutoring(){
+  sessionStorage.removeItem("cocofantoView");
+  history.pushState({view:"tutoring"}, "", location.pathname + location.search);
   document.getElementById("cocofanto").classList.add("hidden");
   document.getElementById("tutoring").classList.remove("hidden");
   setTutoringIdentity();
   window.scrollTo(0,0);
 }
+
+function showCocofantoFromHistory(){
+  sessionStorage.setItem("cocofantoView","1");
+  document.getElementById("tutoring").classList.add("hidden");
+  document.getElementById("cocofanto").classList.remove("hidden");
+  setCocofantoIdentity();
+  window.scrollTo(0,0);
+}
+
+function showTutoringFromHistory(){
+  sessionStorage.removeItem("cocofantoView");
+  document.getElementById("cocofanto").classList.add("hidden");
+  document.getElementById("tutoring").classList.remove("hidden");
+  setTutoringIdentity();
+  window.scrollTo(0,0);
+}
+
+window.addEventListener("popstate", () => {
+  if(location.hash === "#cocofanto"){
+    showCocofantoFromHistory();
+  }else{
+    showTutoringFromHistory();
+  }
+});
 
 function looksURL(s){
   return /^https?:\/\//i.test(s)||(!s.includes(" ")&&/\.[a-z]{2,}(?:[/:?#]|$)/i.test(s));
@@ -236,18 +285,40 @@ function go(){
   const s=document.getElementById("q").value.trim();
   if(!s)return;
 
+  let target;
   if(looksURL(s)){
-    location.href = /^https?:\/\//i.test(s) ? s : "https://" + s;
+    target = /^https?:\/\//i.test(s) ? s : "https://" + s;
+  } else {
+    const preset = localStorage.getItem("cocofantoBrowserPreset") || "duck";
+    const searchUrls = {
+      chrome: "https://www.google.com/search?q=",
+      edge: "https://www.bing.com/search?q=",
+      duck: "https://duckduckgo.com/?q="
+    };
+    target = (searchUrls[preset] || searchUrls.duck) + encodeURIComponent(s);
+  }
+
+  navigateViaExistingProxy(target);
+}
+
+async function navigateViaExistingProxy(target){
+  sessionStorage.setItem("cocofantoView","1");
+  sessionStorage.setItem("cocofantoLastTarget", target);
+
+  if(!window.__uv$config){
+    alert("The existing Ultraviolet configuration did not load.");
     return;
   }
 
-  const preset = localStorage.getItem("cocofantoBrowserPreset") || "duck";
-  const searchUrls = {
-    chrome: "https://www.google.com/search?q=",
-    edge: "https://www.bing.com/search?q=",
-    duck: "https://duckduckgo.com/?q="
-  };
-  location.href = (searchUrls[preset] || searchUrls.duck) + encodeURIComponent(s);
+  try{
+    await navigator.serviceWorker.register("./sw.js", {
+      scope: __uv$config.prefix
+    });
+    location.href = __uv$config.prefix + __uv$config.encodeUrl(target);
+  }catch(err){
+    console.error("Existing proxy routing failed:", err);
+    alert("The existing proxy service worker could not start. Check the console.");
+  }
 }
 
 function continueToCocofanto(){
@@ -257,6 +328,15 @@ function continueToCocofanto(){
     return;
   }
   openCocofanto();
+}
+
+function openPreviousSite(){
+  const target = sessionStorage.getItem("cocofantoLastTarget");
+  if(target){
+    navigateViaExistingProxy(target);
+  } else {
+    alert("No previous Cocofanto site yet.");
+  }
 }
 
 function saveBrowserPreset(){
@@ -280,9 +360,7 @@ function updateBrowserLabel(){
 function saveBackKey(){
   const key=document.getElementById("backKey").value;
   localStorage.setItem("cocofantoBackKey",key);
-  updateBrowserLabel();
-updateKeyLabel();
-setTutoringIdentity();
+  updateKeyLabel();
 }
 
 function updateKeyLabel(){
@@ -301,7 +379,16 @@ window.addEventListener("keydown",e=>{
 
 updateBrowserLabel();
 updateKeyLabel();
-setTutoringIdentity();
+
+if(location.hash === "#cocofanto" || sessionStorage.getItem("cocofantoView")==="1"){
+  if(location.hash !== "#cocofanto"){
+    history.replaceState({view:"cocofanto"}, "", "#cocofanto");
+  }
+  showCocofantoFromHistory();
+}else{
+  history.replaceState({view:"tutoring"}, "", location.pathname + location.search);
+  showTutoringFromHistory();
+}
 </script>
 </body>
 </html>
