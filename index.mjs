@@ -1,31 +1,44 @@
-import createServer from '@tomphttp/bare-server-node';
+import createBareServer from '@tomphttp/bare-server-node';
+import express from 'express';
 import http from 'http';
-import nodeStatic from 'node-static';
-const port = process.env.PORT || 8080;
 
-const bare =  createServer('/bare/');
-const serve = new nodeStatic.Server('main/');
+const port = Number(process.env.PORT) || 8080;
 
-const server = http.createServer();
+const bare = createBareServer('/bare/');
+const app = express();
 
-server.on('request', (req, res) => {
-  if (bare.shouldRoute(req)) {
-    bare.routeRequest(req, res);
-  } else {
-    serve.serve(req, res);
+// Serve the existing frontend from /main.
+app.use(express.static('main'));
+
+// Keep a simple fallback for unknown non-Bare routes.
+app.use((req, res) => {
+  if (!res.headersSent) {
+    res.status(404).send('Not found');
   }
+});
+
+const server = http.createServer((req, res) => {
+  // Exactly one handler owns each HTTP request.
+  if (bare.shouldRoute(req)) {
+    return bare.routeRequest(req, res);
+  }
+
+  return app(req, res);
 });
 
 server.on('upgrade', (req, socket, head) => {
   if (bare.shouldRoute(req, socket, head)) {
-    bare.routeUpgrade(req, socket, head);
-  }else{
-    socket.end();
+    return bare.routeUpgrade(req, socket, head);
   }
+
+  socket.end();
 });
 
-server.listen({
-  port: port,
+server.on('clientError', (err, socket) => {
+  console.error('Client error:', err.message);
+  if (!socket.destroyed) socket.end('HTTP/1.1 400 Bad Request\r\n\r\n');
 });
 
-console.log(`Listening on http://localhost:${port}`)
+server.listen(port, '0.0.0.0', () => {
+  console.log(`Listening on port ${port}`);
+});
