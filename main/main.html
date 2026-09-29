@@ -301,26 +301,44 @@ function go(){
   navigateViaExistingProxy(target);
 }
 
-async function navigateViaExistingProxy(target){
-  sessionStorage.setItem("cocofantoView","1");
+async function navigateViaExistingProxy(target) {
+  sessionStorage.setItem("cocofantoView", "1");
   sessionStorage.setItem("cocofantoLastTarget", target);
 
-  if(!window.__uv$config){
-    alert("The existing Ultraviolet configuration did not load.");
+  if (!window.__uv$config) {
+    alert("Ultraviolet config did not load.");
     return;
   }
 
-  try{
-    await navigator.serviceWorker.register("./sw.js", {
+  try {
+    const registration = await navigator.serviceWorker.register("/sw.js", {
       scope: __uv$config.prefix
     });
-    location.href = __uv$config.prefix + __uv$config.encodeUrl(target);
-  }catch(err){
-    console.error("Existing proxy routing failed:", err);
-    alert("The existing proxy service worker could not start. Check the console.");
+
+    // GoDaddy may take longer than localhost to activate the worker.
+    if (!registration.active) {
+      const worker = registration.installing || registration.waiting;
+
+      if (worker && worker.state !== "activated") {
+        await new Promise((resolve, reject) => {
+          worker.addEventListener("statechange", () => {
+            if (worker.state === "activated") resolve();
+            if (worker.state === "redundant")
+              reject(new Error("Service worker failed to activate"));
+          });
+        });
+      }
+    }
+
+    location.href =
+      __uv$config.prefix +
+      __uv$config.encodeUrl(target);
+
+  } catch (err) {
+    console.error("Service worker error:", err);
+    alert("Cocofanto could not start the service worker.");
   }
 }
-
 function continueToCocofanto(){
   const value=document.getElementById("contactEmail").value.trim();
   if(!value){
