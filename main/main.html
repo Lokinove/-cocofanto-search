@@ -1,330 +1,264 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Cocofanto</title>
-  <meta name="description" content="Cocofanto">
-  <meta name="author" content="Aiden">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Aiden Tutoring</title>
+<link id="favicon" rel="icon" href="">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;min-height:100%;font-family:Arial,Helvetica,sans-serif}
+body{background:#fff;color:#111}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
 
-  <script src="uv/uv.bundle.js"></script>
-  <script src="uv/uv.config.js"></script>
-  <script src="/js/all.js"></script>
+/* Tutoring */
+#tutoring{min-height:100vh;background:#fff;color:#111}
+.t-nav{height:66px;border-bottom:1px solid #ececec;display:flex;align-items:center;justify-content:space-between;padding:0 7vw;background:#fff}
+.t-brand{font-weight:800;font-size:19px}
+.t-links{display:flex;gap:18px;align-items:center}
+.t-links a{color:#555;text-decoration:none;font-size:14px}
+.t-button{border:0;background:#111;color:#fff;border-radius:999px;padding:11px 17px;font-weight:700}
+.hero{min-height:560px;display:grid;grid-template-columns:1.15fr .85fr;gap:42px;align-items:center;padding:68px 9vw}
+.kicker{font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:#777;margin-bottom:18px}
+.hero h1{font-size:60px;line-height:1.03;letter-spacing:-2px;margin:0 0 20px}
+.hero p{font-size:18px;line-height:1.7;color:#666;max-width:650px}
+.hero-card{border:1px solid #ececec;border-radius:24px;padding:34px;text-align:center}
+.hero-card .book{font-size:96px}
+.hero-card h3{margin:12px 0 7px}
+.hero-card p{margin:0;font-size:14px}
+.t-section{padding:76px 9vw;border-top:1px solid #f0f0f0}
+.t-section h2{font-size:36px;margin:0 0 12px}
+.t-section>p{color:#6b6b6b;line-height:1.6;max-width:680px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:28px}
+.card{border:1px solid #e8e8e8;border-radius:18px;padding:23px}
+.card h3{margin:0 0 8px}
+.card p{color:#666;font-size:14px;line-height:1.55;margin:0}
+.contact-box{max-width:650px}
+.contact-row{display:flex;gap:8px;margin-top:18px}
+.contact-row input{flex:1;border:1px solid #ddd;border-radius:999px;padding:13px 16px}
+.note{font-size:12px;color:#888;margin-top:9px}
 
-  <style>
-    * { box-sizing: border-box; }
-    html, body {
-      margin: 0;
-      width: 100%;
-      height: 100%;
-      font-family: Arial, Helvetica, sans-serif;
-      color: #fff;
-      overflow: hidden;
-      background: #050814;
-    }
+/* Cocofanto */
+#cocofanto{min-height:100vh;color:#fff;background:#050814;position:relative;overflow:hidden}
+#cocofanto::before{content:"";position:fixed;inset:0;background:
+linear-gradient(rgba(5,8,20,.55),rgba(5,8,20,.55)),
+url("/img/cocofanto-bg.jpg") center/cover no-repeat;opacity:.82;z-index:0}
+.c-app{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column}
+.c-top{padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.c-brand{display:flex;align-items:center;gap:9px;font-size:19px;font-weight:700}
+.c-brand img{width:38px;height:38px;object-fit:contain}
+.c-actions{display:flex;gap:8px;flex-wrap:wrap}
+.glass{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.11);color:#fff;border-radius:999px;padding:10px 14px;backdrop-filter:blur(10px)}
+.c-main{flex:1;display:flex;align-items:center;justify-content:center;padding:25px}
+.c-shell{width:min(850px,96vw);text-align:center}
+.mascot{width:220px;height:220px;object-fit:contain}
+.c-shell h1{font-size:clamp(44px,6vw,70px);margin:4px 0 22px;letter-spacing:-2px}
+.search{display:flex;gap:8px;width:min(760px,96vw);margin:auto;padding:8px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(14px)}
+.search input{flex:1;border:0;outline:0;background:transparent;color:#fff;padding:13px 12px;font-size:16px}
+.search input::placeholder{color:rgba(255,255,255,.7)}
+.primary{background:#fff;color:#111;border:0;border-radius:999px;padding:12px 20px;font-weight:700}
+.shortcuts{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:14px}
+.small{font-size:12px;color:rgba(255,255,255,.72);margin-top:12px}
+.settings{margin:18px auto 0;width:min(760px,96vw);background:rgba(7,11,24,.72);border:1px solid rgba(255,255,255,.15);border-radius:18px;padding:17px;text-align:left;backdrop-filter:blur(14px)}
+.setting{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.setting select{padding:9px 11px;border-radius:10px;border:0}
 
-    body {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      background:
-        linear-gradient(rgba(4, 8, 20, 0.48), rgba(4, 8, 20, 0.48)),
-        url("/img/cocofanto-bg.jpg") center center / cover no-repeat;
-      opacity: 0.82;
-      z-index: 0;
-    }
-
-    body::after {
-      content: "";
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(circle at center, rgba(255,255,255,0.05), rgba(0,0,0,0.25));
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    .ui {
-      position: relative;
-      z-index: 1;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      padding: 22px 24px 28px;
-    }
-
-    .topbar {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 16px;
-    }
-
-    .shortcut-block {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      align-items: flex-start;
-    }
-
-    .brand-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 9px 14px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.10);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.14);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.18);
-    }
-
-    .brand-chip img {
-      width: 34px;
-      height: 34px;
-      object-fit: contain;
-    }
-
-    .brand-chip span {
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: -0.2px;
-    }
-
-    .shortcuts {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .shortcut {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 9px 14px;
-      border-radius: 999px;
-      text-decoration: none;
-      color: #fff;
-      font-size: 14px;
-      background: rgba(255,255,255,0.10);
-      border: 1px solid rgba(255,255,255,0.14);
-      backdrop-filter: blur(8px);
-      transition: .15s ease;
-    }
-
-    .shortcut:hover {
-      transform: translateY(-1px);
-      background: rgba(255,255,255,0.16);
-    }
-
-    .main {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 10px 0 40px;
-    }
-
-    .search-shell {
-      width: min(860px, 96vw);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .mascot {
-      width: 210px;
-      height: 210px;
-      object-fit: contain;
-      filter: drop-shadow(0 10px 22px rgba(0,0,0,0.22));
-      margin-bottom: 2px;
-    }
-
-    h1 {
-      margin: 0 0 18px;
-      font-size: clamp(42px, 6vw, 70px);
-      letter-spacing: -2px;
-      line-height: 1;
-      text-shadow: 0 4px 20px rgba(0,0,0,0.24);
-    }
-
-    .subtitle {
-      margin: 0 0 24px;
-      font-size: 14px;
-      color: rgba(255,255,255,0.88);
-      max-width: 650px;
-      line-height: 1.5;
-      text-shadow: 0 2px 10px rgba(0,0,0,0.22);
-    }
-
-    .search-wrap {
-      width: min(760px, 96vw);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 8px 8px 18px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.16);
-      border: 1px solid rgba(255,255,255,0.18);
-      backdrop-filter: blur(14px);
-      box-shadow: 0 14px 36px rgba(0,0,0,0.18);
-    }
-
-    #search {
-      flex: 1;
-      width: auto !important;
-      margin: 0 !important;
-      height: auto !important;
-      padding: 14px 8px !important;
-      border: 0 !important;
-      outline: 0 !important;
-      box-shadow: none !important;
-      border-radius: 0 !important;
-      background: transparent !important;
-      color: #fff !important;
-      text-align: left !important;
-      font-family: Arial, Helvetica, sans-serif !important;
-      font-size: 16px !important;
-      font-weight: 400 !important;
-    }
-
-    #search::placeholder { color: rgba(255,255,255,0.72) !important; }
-
-    .search-btn {
-      flex: 0 0 auto;
-      border: 0;
-      border-radius: 999px;
-      background: #ffffff;
-      color: #111;
-      padding: 12px 20px;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .helper {
-      margin-top: 14px;
-      font-size: 12px;
-      color: rgba(255,255,255,0.78);
-      text-shadow: 0 2px 10px rgba(0,0,0,0.22);
-    }
-
-    .footer-note {
-      text-align: center;
-      font-size: 12px;
-      color: rgba(255,255,255,0.66);
-      position: relative;
-      z-index: 1;
-      text-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    }
-
-    @media (max-width: 700px) {
-      .ui { padding: 16px 16px 22px; }
-      .topbar { flex-direction: column; align-items: flex-start; }
-      .mascot { width: 170px; height: 170px; }
-      .search-wrap {
-        padding: 8px;
-        flex-direction: column;
-        border-radius: 24px;
-      }
-      .search-btn {
-        width: 100%;
-        padding: 13px 18px;
-      }
-      #search {
-        width: 100% !important;
-      }
-      .brand-chip span { font-size: 17px; }
-      .shortcuts { gap: 8px; }
-    }
-  </style>
+@media(max-width:760px){
+  .hero{grid-template-columns:1fr;text-align:center}
+  .hero p{margin-left:auto;margin-right:auto}
+  .hero h1{font-size:44px}
+  .cards{grid-template-columns:1fr}
+  .t-links a{display:none}
+  .contact-row{flex-direction:column}
+  .c-top{align-items:flex-start;flex-direction:column}
+  .search{flex-direction:column;border-radius:22px}
+  .primary{width:100%}
+  .setting{align-items:flex-start;flex-direction:column}
+}
+</style>
 </head>
 <body>
-  <div class="ui">
-    <div class="topbar">
-      <div class="shortcut-block">
-        <div class="brand-chip">
-          <img src="/img/cocofanto.png" alt="Cocofanto">
-          <span>Cocofanto</span>
+
+<section id="tutoring">
+  <nav class="t-nav">
+    <div class="t-brand">Aiden Tutoring</div>
+    <div class="t-links">
+      <a href="#subjects">Subjects</a>
+      <a href="#contact">Contact</a>
+      
+    </div>
+  </nav>
+
+  <div class="hero">
+    <div>
+      <div class="kicker">Personal tutoring</div>
+      <h1>Learn clearly.<br>Think independently.</h1>
+      <p>Focused tutoring in Mathematics, Science and Computing with clear explanations, guided practice and targeted revision.</p>
+      <button class="t-button" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Contact Aiden</button>
+    </div>
+    <div class="hero-card">
+      <div class="book">📖</div>
+      <h3>Simple. Focused. Useful.</h3>
+      <p>Clear explanations, practice and progress.</p>
+    </div>
+  </div>
+
+  <section class="t-section" id="subjects">
+    <h2>Subjects</h2>
+    <p>Support for school work, revision and problem solving.</p>
+    <div class="cards">
+      <div class="card"><h3>Mathematics</h3><p>Algebra, geometry, problem solving and exam preparation.</p></div>
+      <div class="card"><h3>Science</h3><p>Physics and chemistry with worked examples and clear reasoning.</p></div>
+      <div class="card"><h3>Computing</h3><p>Programming, algorithms, debugging and coding fundamentals.</p></div>
+    </div>
+  </section>
+
+  <section class="t-section" id="contact">
+    <div class="contact-box">
+      <h2>Contact Aiden</h2>
+      <p>Email: <strong>aiden.breva@gmail.com</strong></p>
+      <div class="contact-row">
+        <input id="contactEmail" type="email" placeholder="Your email address">
+        <button class="t-button" onclick="continueToCocofanto()">Contact</button>
+      </div>
+      <div class="note">This button clearly opens Cocofanto after the contact step.</div>
+    </div>
+  </section>
+</section>
+
+<section id="cocofanto" class="hidden">
+  <div class="c-app">
+    <div class="c-top">
+      <div class="c-brand"><img src="/img/cocofanto.png" alt=""><span>Cocofanto</span></div>
+      <div class="c-actions">
+        <button class="glass" onclick="showCocoSettings()">Settings</button>
+        <button class="glass" onclick="backToTutoring()">← Back to Aiden Tutoring</button>
+      </div>
+    </div>
+
+    <div class="c-main">
+      <div class="c-shell">
+        <img class="mascot" src="/img/cocofanto.png" alt="Cocofanto">
+        <h1>Cocofanto</h1>
+
+        <div class="search">
+          <input id="q" placeholder="Search or enter a URL" onkeydown="if(event.key==='Enter')go()">
+          <button class="primary" onclick="go()">Search</button>
         </div>
 
         <div class="shortcuts">
-          <a class="shortcut" href="#" data-url="https://www.youtube.com/">▶ YouTube</a>
-          <a class="shortcut" href="#" data-url="https://www.wikipedia.org/">W Wikipedia</a>
-          <a class="shortcut" href="#" data-url="https://duckduckgo.com/">🔎 DuckDuckGo</a>
+          <button class="glass" onclick="location.href='https://www.youtube.com/'">▶ YouTube</button>
+          <button class="glass" onclick="location.href='https://www.wikipedia.org/'">Wikipedia</button>
+          <button class="glass" onclick="location.href='https://duckduckgo.com/'">DuckDuckGo</button>
+        </div>
+
+        <div class="settings hidden" id="cocoSettings">
+          <h3 style="margin:0 0 14px">Settings</h3>
+          <div class="setting">
+            <div>
+              <strong>Return shortcut</strong>
+              <div class="small">Choose a key that returns to Aiden Tutoring.</div>
+            </div>
+            <select id="backKey" onchange="saveBackKey()">
+              <option value="Escape">Esc</option>
+              <option value="F2">F2</option>
+              <option value="F4">F4</option>
+              <option value="F8">F8</option>
+            </select>
+          </div>
+          <div class="small" id="keyLabel"></div>
         </div>
       </div>
     </div>
-
-    <div class="main">
-      <div class="search-shell">
-        <img class="mascot" src="/img/cocofanto.png" alt="Cocofanto">
-        <h1>Cocofanto</h1>
-        <p class="subtitle">Search or enter a URL. Plain searches are sent to DuckDuckGo to avoid the Google CAPTCHA loop.</p>
-
-        <div class="search-wrap">
-          <input id="search" type="text" autocomplete="off" placeholder="Search or enter a URL">
-          <button class="search-btn" id="searchButton" type="button">Search</button>
-        </div>
-
-        <div class="helper">Examples: youtube.com, wikipedia.org, or "sheep"</div>
-      </div>
-    </div>
-
-    <div class="footer-note">Cocofanto interface</div>
   </div>
+</section>
 
-  <script>
-    function looksLikeURL(input) {
-      if (!input) return false;
-      if (/^https?:\/\//i.test(input)) return true;
-      if (input.includes(" ")) return false;
-      return /\.[a-z]{2,}(?:[/:?#]|$)/i.test(input);
-    }
+<script>
 
-    function openThroughExistingRouting(raw) {
-      const value = raw.trim();
-      if (!value) return;
+const tutoringIcon =
+  "data:image/svg+xml," +
+  encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+    <rect width="64" height="64" rx="14" fill="#ffffff"/>
+    <path d="M14 17h16c5 0 9 2 12 5v28c-3-3-7-5-12-5H14V17z" fill="#1f2937"/>
+    <path d="M50 17H34c-5 0-9 2-12 5v28c3-3 7-5 12-5h16V17z" fill="#4b5563"/>
+  </svg>`);
 
-      let target;
-      if (looksLikeURL(value)) {
-        target = /^https?:\/\//i.test(value) ? value : "https://" + value;
-      } else {
-        target = "https://duckduckgo.com/?q=" + encodeURIComponent(value);
-      }
+function setTutoringIdentity(){
+  document.title = "Aiden Tutoring";
+  document.getElementById("favicon").href = tutoringIcon;
+}
 
-      if (window.__uv$config && typeof __uv$config.encodeUrl === "function") {
-        location.href = __uv$config.prefix + __uv$config.encodeUrl(target);
-      } else {
-        location.href = target;
-      }
-    }
+function setCocofantoIdentity(){
+  document.title = "Cocofanto";
+  document.getElementById("favicon").href = "/img/cocofanto.png";
+}
 
-    document.getElementById("searchButton").addEventListener("click", function () {
-      openThroughExistingRouting(document.getElementById("search").value);
-    });
+function showCocoSettings(){
+  document.getElementById("cocoSettings").classList.toggle("hidden");
+}
 
-    document.getElementById("search").addEventListener("keydown", function (event) {
-      if (event.key === "Enter") {
-        event.preventDefault();
-        openThroughExistingRouting(this.value);
-      }
-    });
+function openCocofanto(){
+  document.getElementById("tutoring").classList.add("hidden");
+  document.getElementById("cocofanto").classList.remove("hidden");
+  setCocofantoIdentity();
+  window.scrollTo(0,0);
+  setTimeout(()=>document.getElementById("q").focus(),50);
+}
 
-    document.querySelectorAll(".shortcut").forEach(function (el) {
-      el.addEventListener("click", function (event) {
-        event.preventDefault();
-        openThroughExistingRouting(el.getAttribute("data-url"));
-      });
-    });
-  </script>
+function backToTutoring(){
+  document.getElementById("cocofanto").classList.add("hidden");
+  document.getElementById("tutoring").classList.remove("hidden");
+  setTutoringIdentity();
+  window.scrollTo(0,0);
+}
+
+function looksURL(s){
+  return /^https?:\/\//i.test(s)||(!s.includes(" ")&&/\.[a-z]{2,}(?:[/:?#]|$)/i.test(s));
+}
+
+function go(){
+  const s=document.getElementById("q").value.trim();
+  if(!s)return;
+  const u=looksURL(s)
+    ? (/^https?:\/\//i.test(s)?s:"https://"+s)
+    : "https://duckduckgo.com/?q="+encodeURIComponent(s);
+  location.href=u;
+}
+
+function continueToCocofanto(){
+  const value=document.getElementById("contactEmail").value.trim();
+  if(!value){
+    alert("Please enter your email address first.");
+    return;
+  }
+  openCocofanto();
+}
+
+function saveBackKey(){
+  const key=document.getElementById("backKey").value;
+  localStorage.setItem("cocofantoBackKey",key);
+  updateKeyLabel();
+setTutoringIdentity();
+}
+
+function updateKeyLabel(){
+  const key=localStorage.getItem("cocofantoBackKey")||"Escape";
+  document.getElementById("backKey").value=key;
+  document.getElementById("keyLabel").textContent="Current shortcut: "+(key==="Escape"?"Esc":key);
+}
+
+window.addEventListener("keydown",e=>{
+  const key=localStorage.getItem("cocofantoBackKey")||"Escape";
+  if(!document.getElementById("cocofanto").classList.contains("hidden") && e.key===key){
+    e.preventDefault();
+    backToTutoring();
+  }
+});
+
+updateKeyLabel();
+setTutoringIdentity();
+</script>
 </body>
 </html>
