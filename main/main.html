@@ -123,7 +123,7 @@ url("/img/cocofanto-bg.jpg") center/cover no-repeat;opacity:.82;z-index:0}
         <input id="contactEmail" type="email" placeholder="Your email address">
         <button class="t-button" onclick="continueToCocofanto()">Contact</button>
       </div>
-      <div class="note">This button clearly opens Cocofanto after the contact step.</div>
+      
     </div>
   </section>
 </section>
@@ -158,6 +158,18 @@ url("/img/cocofanto-bg.jpg") center/cover no-repeat;opacity:.82;z-index:0}
           <h3 style="margin:0 0 14px">Settings</h3>
           <div class="setting">
             <div>
+              <strong>Browser / search preset</strong>
+              <div class="small">Controls which search engine is used for normal searches.</div>
+            </div>
+            <select id="browserPreset" onchange="saveBrowserPreset()">
+              <option value="chrome">Chrome · Google</option>
+              <option value="edge">Edge · Bing</option>
+              <option value="duck">DuckDuckGo</option>
+            </select>
+          </div>
+
+          <div class="setting">
+            <div>
               <strong>Return shortcut</strong>
               <div class="small">Choose a key that returns to Aiden Tutoring.</div>
             </div>
@@ -168,6 +180,8 @@ url("/img/cocofanto-bg.jpg") center/cover no-repeat;opacity:.82;z-index:0}
               <option value="F8">F8</option>
             </select>
           </div>
+
+          <div class="small" id="browserLabel"></div>
           <div class="small" id="keyLabel"></div>
         </div>
       </div>
@@ -221,10 +235,19 @@ function looksURL(s){
 function go(){
   const s=document.getElementById("q").value.trim();
   if(!s)return;
-  const u=looksURL(s)
-    ? (/^https?:\/\//i.test(s)?s:"https://"+s)
-    : "https://duckduckgo.com/?q="+encodeURIComponent(s);
-  location.href=u;
+
+  if(looksURL(s)){
+    location.href = /^https?:\/\//i.test(s) ? s : "https://" + s;
+    return;
+  }
+
+  const preset = localStorage.getItem("cocofantoBrowserPreset") || "duck";
+  const searchUrls = {
+    chrome: "https://www.google.com/search?q=",
+    edge: "https://www.bing.com/search?q=",
+    duck: "https://duckduckgo.com/?q="
+  };
+  location.href = (searchUrls[preset] || searchUrls.duck) + encodeURIComponent(s);
 }
 
 function continueToCocofanto(){
@@ -236,10 +259,29 @@ function continueToCocofanto(){
   openCocofanto();
 }
 
+function saveBrowserPreset(){
+  const preset = document.getElementById("browserPreset").value;
+  localStorage.setItem("cocofantoBrowserPreset", preset);
+  updateBrowserLabel();
+}
+
+function updateBrowserLabel(){
+  const preset = localStorage.getItem("cocofantoBrowserPreset") || "duck";
+  const names = {
+    chrome: "Chrome · Google",
+    edge: "Edge · Bing",
+    duck: "DuckDuckGo"
+  };
+  document.getElementById("browserPreset").value = preset;
+  document.getElementById("browserLabel").textContent =
+    "Current browser/search preset: " + (names[preset] || names.duck);
+}
+
 function saveBackKey(){
   const key=document.getElementById("backKey").value;
   localStorage.setItem("cocofantoBackKey",key);
-  updateKeyLabel();
+  updateBrowserLabel();
+updateKeyLabel();
 setTutoringIdentity();
 }
 
@@ -257,6 +299,7 @@ window.addEventListener("keydown",e=>{
   }
 });
 
+updateBrowserLabel();
 updateKeyLabel();
 setTutoringIdentity();
 </script>
