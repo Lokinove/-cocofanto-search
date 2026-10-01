@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Aiden Tutoring</title>
-<link id="favicon" rel="icon" href="">
-<script src="/uv/uv.bundle.js"></script>
-<script src="/uv/uv.config.js"></script>
+<link id="favicon" rel="icon" type="image/svg+xml" href="/img/tutoring-icon.svg">
+<script defer src="/uv/uv.bundle.js"></script>
+<script defer src="/uv/uv.config.js"></script>
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;width:100%;min-height:100%;font-family:Arial,Helvetica,sans-serif}
@@ -52,18 +52,18 @@ url("/img/cocofanto-bg.jpg") center/cover no-repeat;opacity:.82;z-index:0}
 .c-brand{display:flex;align-items:center;gap:9px;font-size:19px;font-weight:700}
 .c-brand img{width:38px;height:38px;object-fit:contain}
 .c-actions{display:flex;gap:8px;flex-wrap:wrap}
-.glass{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.11);color:#fff;border-radius:999px;padding:10px 14px;backdrop-filter:blur(10px)}
+.glass{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.11);color:#fff;border-radius:999px;padding:10px 14px;backdrop-filter:blur(6px)}
 .c-main{flex:1;display:flex;align-items:center;justify-content:center;padding:25px}
 .c-shell{width:min(850px,96vw);text-align:center}
 .mascot{width:220px;height:220px;object-fit:contain}
 .c-shell h1{font-size:clamp(44px,6vw,70px);margin:4px 0 22px;letter-spacing:-2px}
-.search{display:flex;gap:8px;width:min(760px,96vw);margin:auto;padding:8px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(14px)}
+.search{display:flex;gap:8px;width:min(760px,96vw);margin:auto;padding:8px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(7px)}
 .search input{flex:1;border:0;outline:0;background:transparent;color:#fff;padding:13px 12px;font-size:16px}
 .search input::placeholder{color:rgba(255,255,255,.7)}
 .primary{background:#fff;color:#111;border:0;border-radius:999px;padding:12px 20px;font-weight:700}
 .shortcuts{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:14px}
 .small{font-size:12px;color:rgba(255,255,255,.72);margin-top:12px}
-.settings{margin:18px auto 0;width:min(760px,96vw);background:rgba(7,11,24,.72);border:1px solid rgba(255,255,255,.15);border-radius:18px;padding:17px;text-align:left;backdrop-filter:blur(14px)}
+.settings{margin:18px auto 0;width:min(760px,96vw);background:rgba(7,11,24,.72);border:1px solid rgba(255,255,255,.15);border-radius:18px;padding:17px;text-align:left;backdrop-filter:blur(7px)}
 .setting{display:flex;align-items:center;justify-content:space-between;gap:16px}
 .setting select{padding:9px 11px;border-radius:10px;border:0}
 
@@ -79,21 +79,16 @@ url("/img/cocofanto-bg.jpg") center/cover no-repeat;opacity:.82;z-index:0}
   .primary{width:100%}
   .setting{align-items:flex-start;flex-direction:column}
 }
+
+/* Performance: skip off-screen tutoring work and reduce expensive GPU effects on low-end devices. */
+.t-section{content-visibility:auto;contain-intrinsic-size:500px}
+#cocofanto.hidden{content-visibility:hidden}
+html.low-power .glass,
+html.low-power .search,
+html.low-power .settings{backdrop-filter:none!important}
+html.low-power #cocofanto::before{opacity:.72}
+
 </style>
-<script>
-window.addEventListener("DOMContentLoaded", () => {
-  if (!window.__uv$config) {
-    const s1=document.createElement("script");
-    s1.src="uv/uv.bundle.js";
-    s1.onload=()=>{
-      const s2=document.createElement("script");
-      s2.src="uv/uv.config.js";
-      document.head.appendChild(s2);
-    };
-    document.head.appendChild(s1);
-  }
-});
-</script>
 </head>
 <body>
 
@@ -147,7 +142,7 @@ window.addEventListener("DOMContentLoaded", () => {
 <section id="cocofanto" class="hidden">
   <div class="c-app">
     <div class="c-top">
-      <div class="c-brand"><img src="/img/cocofanto.png" alt=""><span>Cocofanto</span></div>
+      <div class="c-brand"><img src="/img/cocofanto.png" alt="" decoding="async" width="38" height="38"><span>Cocofanto</span></div>
       <div class="c-actions">
         <button class="glass" onclick="openPreviousSite()">← Previous site</button>
         <button class="glass" onclick="showCocoSettings()">Settings</button>
@@ -157,7 +152,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
     <div class="c-main">
       <div class="c-shell">
-        <img class="mascot" src="/img/cocofanto.png" alt="Cocofanto">
+        <img class="mascot" src="/img/cocofanto.png" alt="Cocofanto" decoding="async" width="220" height="220">
         <h1>Cocofanto</h1>
 
         <div class="search">
@@ -208,22 +203,14 @@ window.addEventListener("DOMContentLoaded", () => {
 
 <script>
 
-const tutoringIcon =
-  "data:image/svg+xml," +
-  encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-    <rect width="64" height="64" rx="14" fill="#ffffff"/>
-    <path d="M14 17h16c5 0 9 2 12 5v28c-3-3-7-5-12-5H14V17z" fill="#1f2937"/>
-    <path d="M50 17H34c-5 0-9 2-12 5v28c3-3 7-5 12-5h16V17z" fill="#4b5563"/>
-  </svg>`);
-
 function setTutoringIdentity(){
   document.title = "Aiden Tutoring";
-  document.getElementById("favicon").href = tutoringIcon;
+  document.getElementById("favicon").href = "/img/tutoring-icon.svg";
 }
 
 function setCocofantoIdentity(){
-  document.title = "Cocofanto";
-  document.getElementById("favicon").href = "/img/cocofanto.png";
+  document.title = "Aiden Tutoring — Cocofanto";
+  document.getElementById("favicon").href = "/img/tutoring-icon.svg";
 }
 
 function showCocoSettings(){
@@ -232,6 +219,7 @@ function showCocoSettings(){
 
 function openCocofanto(addHistory = true){
   sessionStorage.setItem("cocofantoView","1");
+  setCocofantoIdentity();
 
   if(addHistory && location.hash !== "#cocofanto"){
     history.pushState({view:"cocofanto"}, "", "#cocofanto");
@@ -239,17 +227,19 @@ function openCocofanto(addHistory = true){
 
   document.getElementById("tutoring").classList.add("hidden");
   document.getElementById("cocofanto").classList.remove("hidden");
-  setCocofantoIdentity();
   window.scrollTo(0,0);
-  setTimeout(()=>document.getElementById("q").focus(),50);
+  document.getElementById("q").focus({preventScroll:true});
+
+  // Pre-warm the already-existing UV/service-worker path while the user is on Cocofanto.
+  ensureProxyReady().catch(err => console.debug("Proxy prewarm deferred:", err));
 }
 
 function backToTutoring(){
   sessionStorage.removeItem("cocofantoView");
+  setTutoringIdentity();
   history.pushState({view:"tutoring"}, "", location.pathname + location.search);
   document.getElementById("cocofanto").classList.add("hidden");
   document.getElementById("tutoring").classList.remove("hidden");
-  setTutoringIdentity();
   window.scrollTo(0,0);
 }
 
@@ -301,44 +291,80 @@ function go(){
   navigateViaExistingProxy(target);
 }
 
-async function navigateViaExistingProxy(target) {
-  sessionStorage.setItem("cocofantoView", "1");
-  sessionStorage.setItem("cocofantoLastTarget", target);
+let proxyReadyPromise = null;
 
-  if (!window.__uv$config) {
-    alert("Ultraviolet config did not load.");
-    return;
-  }
+function waitForUvConfig(timeoutMs = 5000){
+  if(window.__uv$config) return Promise.resolve(window.__uv$config);
 
-  try {
-    const registration = await navigator.serviceWorker.register("/sw.js", {
-      scope: __uv$config.prefix
-    });
+  return new Promise((resolve, reject) => {
+    const started = performance.now();
 
-    // GoDaddy may take longer than localhost to activate the worker.
-    if (!registration.active) {
-      const worker = registration.installing || registration.waiting;
-
-      if (worker && worker.state !== "activated") {
-        await new Promise((resolve, reject) => {
-          worker.addEventListener("statechange", () => {
-            if (worker.state === "activated") resolve();
-            if (worker.state === "redundant")
-              reject(new Error("Service worker failed to activate"));
-          });
-        });
+    function check(){
+      if(window.__uv$config) return resolve(window.__uv$config);
+      if(performance.now() - started > timeoutMs){
+        return reject(new Error("Ultraviolet config did not load."));
       }
+      requestAnimationFrame(check);
     }
 
-    location.href =
-      __uv$config.prefix +
-      __uv$config.encodeUrl(target);
+    check();
+  });
+}
 
-  } catch (err) {
-    console.error("Service worker error:", err);
-    alert("Cocofanto could not start the service worker.");
+async function ensureProxyReady(){
+  if(proxyReadyPromise) return proxyReadyPromise;
+
+  proxyReadyPromise = (async () => {
+    const config = await waitForUvConfig();
+    const registration = await navigator.serviceWorker.register("/sw.js", {
+      scope: config.prefix
+    });
+
+    if(registration.active) return registration;
+
+    const worker = registration.installing || registration.waiting;
+    if(!worker) return registration;
+    if(worker.state === "activated") return registration;
+
+    await new Promise((resolve, reject) => {
+      const timer = setTimeout(
+        () => reject(new Error("Service worker activation timed out.")),
+        6000
+      );
+
+      worker.addEventListener("statechange", () => {
+        if(worker.state === "activated"){
+          clearTimeout(timer);
+          resolve();
+        }else if(worker.state === "redundant"){
+          clearTimeout(timer);
+          reject(new Error("Service worker became redundant."));
+        }
+      });
+    });
+
+    return registration;
+  })().catch(err => {
+    proxyReadyPromise = null;
+    throw err;
+  });
+
+  return proxyReadyPromise;
+}
+
+async function navigateViaExistingProxy(target){
+  sessionStorage.setItem("cocofantoView","1");
+  sessionStorage.setItem("cocofantoLastTarget", target);
+
+  try{
+    await ensureProxyReady();
+    location.href = __uv$config.prefix + __uv$config.encodeUrl(target);
+  }catch(err){
+    console.error("Existing proxy routing failed:", err);
+    alert("Cocofanto could not start the existing service worker. Check the console.");
   }
 }
+
 function continueToCocofanto(){
   const value=document.getElementById("contactEmail").value.trim();
   if(!value){
@@ -397,6 +423,17 @@ window.addEventListener("keydown",e=>{
 
 updateBrowserLabel();
 updateKeyLabel();
+
+if((navigator.hardwareConcurrency || 8) <= 4){
+  document.documentElement.classList.add("low-power");
+}
+
+const prewarm = () => ensureProxyReady().catch(() => {});
+if("requestIdleCallback" in window){
+  requestIdleCallback(prewarm, {timeout: 1800});
+}else{
+  setTimeout(prewarm, 900);
+}
 
 if(location.hash === "#cocofanto" || sessionStorage.getItem("cocofantoView")==="1"){
   if(location.hash !== "#cocofanto"){
