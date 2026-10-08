@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Aiden Tutoring</title>
 <link id="favicon" rel="icon" type="image/svg+xml" href="/img/tutoring-icon.svg">
+<link rel="preload" as="image" href="/img/cocofanto.png">
 <script defer src="/uv/uv.bundle.js"></script>
 <script defer src="/uv/uv.config.js"></script>
 <style>
@@ -43,30 +44,219 @@ button{cursor:pointer}
 .note{font-size:12px;color:#888;margin-top:9px}
 
 /* Cocofanto */
-#cocofanto{min-height:100vh;color:#fff;background:#050814;position:relative;overflow:hidden}
-#cocofanto::before{content:"";position:fixed;inset:0;background:
-linear-gradient(rgba(5,8,20,.55),rgba(5,8,20,.55)),
-url("/img/cocofanto-bg.jpg") center/cover no-repeat;opacity:.82;z-index:0}
+#cocofanto{
+  --c-white:#f7f9ff;
+  --c-muted:rgba(239,244,255,.68);
+  --c-border:rgba(255,255,255,.12);
+  --c-glass:rgba(8,12,30,.52);
+  --c-glass-strong:rgba(7,10,25,.72);
+  --c-shadow:0 18px 55px rgba(0,0,0,.26);
+  min-height:100vh;
+  color:var(--c-white);
+  background:#03040a;
+  position:relative;
+  overflow:hidden;
+}
+#cocofanto::before{
+  content:"";
+  position:fixed;
+  inset:-16px;
+  background:url("/img/cocofanto-bg.jpg") center/cover no-repeat;
+  opacity:.40;
+  filter:saturate(.9) brightness(.62) contrast(1.08);
+  transform:scale(1.035);
+  z-index:0;
+  pointer-events:none;
+}
+#cocofanto::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(circle at 50% 34%, rgba(34,82,160,.17), transparent 34%),
+    linear-gradient(180deg, rgba(1,3,10,.44) 0%, rgba(2,4,13,.68) 58%, rgba(1,2,8,.90) 100%);
+  z-index:0;
+  pointer-events:none;
+}
 .c-app{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column}
-.c-top{padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.c-brand{display:flex;align-items:center;gap:9px;font-size:19px;font-weight:700}
-.c-brand img{width:38px;height:38px;object-fit:contain}
-.c-actions{display:flex;gap:8px;flex-wrap:wrap}
-.glass{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.11);color:#fff;border-radius:999px;padding:10px 14px;backdrop-filter:blur(6px)}
-.c-main{flex:1;display:flex;align-items:center;justify-content:center;padding:25px}
-.c-shell{width:min(850px,96vw);text-align:center}
-.mascot{width:220px;height:220px;object-fit:contain}
-.c-shell h1{font-size:clamp(44px,6vw,70px);margin:4px 0 22px;letter-spacing:-2px}
-.search{display:flex;gap:8px;width:min(760px,96vw);margin:auto;padding:8px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(7px)}
-.search input{flex:1;border:0;outline:0;background:transparent;color:#fff;padding:13px 12px;font-size:16px}
-.search input::placeholder{color:rgba(255,255,255,.7)}
-.primary{background:#fff;color:#111;border:0;border-radius:999px;padding:12px 20px;font-weight:700}
-.shortcuts{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:14px}
-.small{font-size:12px;color:rgba(255,255,255,.72);margin-top:12px}
-.settings{margin:18px auto 0;width:min(760px,96vw);background:rgba(7,11,24,.72);border:1px solid rgba(255,255,255,.15);border-radius:18px;padding:17px;text-align:left;backdrop-filter:blur(7px)}
-.setting{display:flex;align-items:center;justify-content:space-between;gap:16px}
-.setting select{padding:9px 11px;border-radius:10px;border:0}
+.c-top{
+  padding:18px 22px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  animation:topBarIn .48s cubic-bezier(.2,.75,.25,1) both;
+}
+.c-brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:18px;
+  font-weight:750;
+  letter-spacing:-.02em;
+  padding:7px 11px 7px 8px;
+  border:1px solid rgba(255,255,255,.09);
+  background:rgba(7,10,24,.34);
+  border-radius:999px;
+  backdrop-filter:blur(10px);
+  box-shadow:0 8px 28px rgba(0,0,0,.12);
+}
+.c-brand img{width:34px;height:34px;object-fit:contain;transition:transform .28s cubic-bezier(.2,.8,.2,1)}
+.c-brand:hover img{transform:rotate(-5deg) scale(1.06)}
+.c-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.glass{
+  border:1px solid var(--c-border);
+  background:rgba(255,255,255,.075);
+  color:#fff;
+  border-radius:999px;
+  padding:10px 14px;
+  backdrop-filter:blur(10px);
+  box-shadow:0 8px 22px rgba(0,0,0,.10);
+  transition:transform .2s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+.glass:hover{
+  transform:translateY(-2px);
+  background:rgba(255,255,255,.13);
+  border-color:rgba(255,255,255,.23);
+  box-shadow:0 12px 30px rgba(0,0,0,.17);
+}
+.glass:active{transform:translateY(0) scale(.98)}
+.c-main{flex:1;display:flex;min-height:0;padding:10px 25px 32px}
+.c-panel-view{display:none;width:100%;min-height:0}
+.c-panel-view.active{display:flex;animation:panelIn .34s cubic-bezier(.2,.75,.25,1) both}
+#cocoHomePanel{align-items:center;justify-content:center}
+.c-shell{width:min(860px,96vw);text-align:center;margin:auto}
+.mascot-wrap{display:inline-flex;position:relative;margin-bottom:2px}
+.mascot-wrap::after{
+  content:"";
+  position:absolute;
+  left:16%;right:16%;bottom:9%;height:16%;
+  border-radius:50%;
+  background:rgba(14,91,191,.28);
+  filter:blur(18px);
+  z-index:-1;
+}
+.mascot{width:205px;height:205px;object-fit:contain;filter:drop-shadow(0 18px 32px rgba(0,0,0,.28));animation:mascotFloat 5.6s ease-in-out 1.2s infinite}
+.c-eyebrow{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:rgba(215,228,255,.60);margin-top:2px}
+.c-shell h1{font-size:clamp(46px,6.2vw,72px);margin:7px 0 6px;letter-spacing:-.055em;line-height:.98;text-shadow:0 8px 38px rgba(0,0,0,.25)}
+.c-subtitle{color:var(--c-muted);font-size:14px;margin:0 0 22px}
+.load-in{opacity:0;animation:glideUp .5s cubic-bezier(.2,.8,.2,1) forwards}
+.load-1{animation-delay:.05s}.load-2{animation-delay:.12s}.load-3{animation-delay:.19s}.load-4{animation-delay:.26s}.load-5{animation-delay:.33s}
+.search{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  width:min(760px,96vw);
+  margin:auto;
+  padding:7px;
+  border-radius:24px;
+  background:rgba(8,12,30,.56);
+  border:1px solid rgba(255,255,255,.13);
+  backdrop-filter:blur(14px);
+  box-shadow:0 20px 55px rgba(0,0,0,.23), inset 0 1px 0 rgba(255,255,255,.04);
+  transition:transform .22s ease, border-color .22s ease, background .22s ease, box-shadow .22s ease;
+}
+.search:focus-within{
+  transform:translateY(-2px) scale(1.006);
+  border-color:rgba(135,185,255,.42);
+  background:rgba(9,14,35,.70);
+  box-shadow:0 24px 70px rgba(0,0,0,.29),0 0 0 4px rgba(90,145,255,.06);
+}
+.search input{
+  flex:1;
+  min-width:0;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:#fff;
+  padding:14px 14px;
+  font-size:16px;
+  letter-spacing:-.01em;
+}
+.search input::placeholder{color:rgba(232,239,255,.52)}
+.primary{
+  background:linear-gradient(180deg,#fff,#eaf0ff);
+  color:#0b1020;
+  border:0;
+  border-radius:18px;
+  padding:13px 21px;
+  min-width:94px;
+  font-weight:800;
+  box-shadow:0 7px 20px rgba(0,0,0,.18);
+  transition:transform .2s ease, box-shadow .2s ease, filter .2s ease;
+}
+.primary:hover{transform:translateY(-2px);box-shadow:0 11px 28px rgba(0,0,0,.24);filter:brightness(1.03)}
+.primary:active{transform:translateY(0) scale(.98)}
+.shortcuts{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin-top:14px}
+.shortcuts .glass{padding:9px 13px;background:rgba(8,12,28,.40)}
+.small{font-size:12px;color:rgba(232,239,255,.60);margin-top:8px}
 
+/* Dedicated settings view */
+#cocoSettingsPanel{align-items:flex-start;justify-content:center;padding:34px 0 48px;overflow:auto}
+.settings-page{
+  width:min(760px,96vw);
+  margin:auto;
+  background:rgba(5,8,22,.67);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:28px;
+  padding:26px;
+  backdrop-filter:blur(16px);
+  box-shadow:var(--c-shadow);
+}
+.settings-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}
+.settings-head-copy{text-align:left}
+.settings-head h2{font-size:32px;letter-spacing:-.035em;margin:0 0 5px}
+.settings-head p{margin:0;color:var(--c-muted);font-size:14px}
+.settings-group{display:grid;gap:12px}
+.setting-card{
+  display:grid;
+  grid-template-columns:1fr auto;
+  align-items:center;
+  gap:20px;
+  padding:18px;
+  background:rgba(255,255,255,.045);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:18px;
+  text-align:left;
+  transition:transform .2s ease, background .2s ease, border-color .2s ease;
+}
+.setting-card:hover{transform:translateY(-2px);background:rgba(255,255,255,.065);border-color:rgba(255,255,255,.14)}
+.setting-title{font-weight:750;margin-bottom:4px}
+.setting-desc{font-size:12px;color:var(--c-muted);line-height:1.45}
+.select-wrap{position:relative;min-width:190px}
+.select-wrap::after{
+  content:"⌄";
+  position:absolute;
+  right:13px;
+  top:50%;
+  transform:translateY(-56%);
+  color:rgba(255,255,255,.65);
+  font-size:17px;
+  pointer-events:none;
+}
+.select-wrap select{
+  width:100%;
+  appearance:none;
+  -webkit-appearance:none;
+  border:1px solid rgba(255,255,255,.13);
+  background:rgba(255,255,255,.075);
+  color:#fff;
+  border-radius:13px;
+  padding:11px 38px 11px 13px;
+  outline:0;
+  cursor:pointer;
+  transition:background .2s ease,border-color .2s ease,box-shadow .2s ease,transform .2s ease;
+}
+.select-wrap select:hover{background:rgba(255,255,255,.11);border-color:rgba(255,255,255,.22)}
+.select-wrap select:focus{border-color:rgba(138,186,255,.55);box-shadow:0 0 0 4px rgba(83,145,255,.08)}
+.select-wrap select option{background:#11172b;color:#fff}
+.settings-status{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.status-pill{padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08);font-size:11px;color:rgba(235,242,255,.68)}
+
+@keyframes glideUp{from{opacity:0;transform:translateY(11px) scale(.995)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes panelIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes topBarIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes mascotFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 @media(max-width:760px){
   .hero{grid-template-columns:1fr;text-align:center}
   .hero p{margin-left:auto;margin-right:auto}
@@ -74,20 +264,42 @@ url("/img/cocofanto-bg.jpg") center/cover no-repeat;opacity:.82;z-index:0}
   .cards{grid-template-columns:1fr}
   .t-links a{display:none}
   .contact-row{flex-direction:column}
-  .c-top{align-items:flex-start;flex-direction:column}
-  .search{flex-direction:column;border-radius:22px}
-  .primary{width:100%}
-  .setting{align-items:flex-start;flex-direction:column}
+  .c-top{padding:14px;align-items:flex-start}
+  .c-brand{font-size:16px}
+  .c-actions{gap:6px}
+  .c-actions .glass{padding:8px 10px;font-size:12px}
+  .c-main{padding:4px 14px 22px}
+  .mascot{width:165px;height:165px}
+  .c-shell h1{font-size:48px}
+  .search{border-radius:20px;padding:6px}
+  .search input{padding:13px 11px}
+  .primary{padding:12px 16px;border-radius:15px}
+  .settings-page{padding:18px;border-radius:22px}
+  .settings-head{align-items:flex-start}
+  .settings-head h2{font-size:28px}
+  .setting-card{grid-template-columns:1fr;gap:12px}
+  .select-wrap{min-width:100%;width:100%}
+}
+@media(max-width:520px){
+  .c-top{flex-direction:column}
+  .c-actions{width:100%}
+  .c-actions .glass{flex:1}
+  .c-subtitle{margin-bottom:17px}
+  .search{flex-direction:row}
+  .primary{min-width:82px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
 }
 
-/* Performance: skip off-screen tutoring work and reduce expensive GPU effects on low-end devices. */
+/* Performance: keep expensive effects light on lower-powered devices. */
 .t-section{content-visibility:auto;contain-intrinsic-size:500px}
 #cocofanto.hidden{content-visibility:hidden}
 html.low-power .glass,
 html.low-power .search,
-html.low-power .settings{backdrop-filter:none!important}
-html.low-power #cocofanto::before{opacity:.72}
-
+html.low-power .settings-page,
+html.low-power .c-brand{backdrop-filter:none!important}
+html.low-power #cocofanto::before{opacity:.32;filter:saturate(.82) brightness(.56)}
 </style>
 </head>
 <body>
@@ -141,63 +353,86 @@ html.low-power #cocofanto::before{opacity:.72}
 
 <section id="cocofanto" class="hidden">
   <div class="c-app">
-    <div class="c-top">
-      <div class="c-brand"><img src="/img/cocofanto.png" alt="" decoding="async" width="38" height="38"><span>Cocofanto</span></div>
+    <header class="c-top">
+      <div class="c-brand"><img src="/img/cocofanto.png" alt="" decoding="async" width="34" height="34"><span>Cocofanto</span></div>
       <div class="c-actions">
-        <button class="glass" onclick="openPreviousSite()">← Previous site</button>
+        <button class="glass" onclick="openPreviousSite()">← Previous</button>
         <button class="glass" onclick="showCocoSettings()">Settings</button>
-        <button class="glass" onclick="backToTutoring()">← Back to Aiden Tutoring</button>
+        <button class="glass" onclick="backToTutoring()">Tutoring</button>
       </div>
-    </div>
+    </header>
 
-    <div class="c-main">
-      <div class="c-shell">
-        <img class="mascot" src="/img/cocofanto.png" alt="Cocofanto" decoding="async" width="220" height="220">
-        <h1>Cocofanto</h1>
+    <main class="c-main">
+      <section id="cocoHomePanel" class="c-panel-view active">
+        <div class="c-shell">
+          <div class="mascot-wrap load-in load-1">
+            <img class="mascot" src="/img/cocofanto.png" alt="Cocofanto" decoding="async" width="205" height="205">
+          </div>
+          <div class="c-eyebrow load-in load-2">Search the web</div>
+          <h1 class="load-in load-2">Cocofanto</h1>
+          <p class="c-subtitle load-in load-3">Search or enter a URL.</p>
 
-        <div class="search">
-          <input id="q" placeholder="Search or enter a URL" onkeydown="if(event.key==='Enter')go()">
-          <button class="primary" onclick="go()">Search</button>
-        </div>
-
-        <div class="shortcuts">
-          <button class="glass" onclick="navigateViaExistingProxy('https://www.youtube.com/')">▶ YouTube</button>
-          <button class="glass" onclick="navigateViaExistingProxy('https://www.wikipedia.org/')">Wikipedia</button>
-          <button class="glass" onclick="navigateViaExistingProxy('https://duckduckgo.com/')">DuckDuckGo</button>
-        </div>
-
-        <div class="settings hidden" id="cocoSettings">
-          <h3 style="margin:0 0 14px">Settings</h3>
-          <div class="setting">
-            <div>
-              <strong>Browser / search preset</strong>
-              <div class="small">Controls which search engine is used for normal searches.</div>
-            </div>
-            <select id="browserPreset" onchange="saveBrowserPreset()">
-              <option value="chrome">Chrome · Google</option>
-              <option value="edge">Edge · Bing</option>
-              <option value="duck">DuckDuckGo</option>
-            </select>
+          <div class="search load-in load-3">
+            <input id="q" autocomplete="off" spellcheck="false" placeholder="Search or enter a URL" onkeydown="if(event.key==='Enter')go()">
+            <button class="primary" onclick="go()">Search</button>
           </div>
 
-          <div class="setting">
-            <div>
-              <strong>Return shortcut</strong>
-              <div class="small">Choose a key that returns to Aiden Tutoring.</div>
+          <div class="shortcuts load-in load-4">
+            <button class="glass" onclick="navigateViaExistingProxy('https://www.youtube.com/')">▶ YouTube</button>
+            <button class="glass" onclick="navigateViaExistingProxy('https://www.wikipedia.org/')">Wikipedia</button>
+            <button class="glass" onclick="navigateViaExistingProxy('https://duckduckgo.com/')">DuckDuckGo</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="cocoSettingsPanel" class="c-panel-view">
+        <div class="settings-page">
+          <div class="settings-head">
+            <div class="settings-head-copy">
+              <h2>Settings</h2>
+              <p>Search preferences and Cocofanto controls.</p>
             </div>
-            <select id="backKey" onchange="saveBackKey()">
-              <option value="Escape">Esc</option>
-              <option value="F2">F2</option>
-              <option value="F4">F4</option>
-              <option value="F8">F8</option>
-            </select>
+            <button class="glass" onclick="showCocoHome()">← Back to search</button>
           </div>
 
-          <div class="small" id="browserLabel"></div>
-          <div class="small" id="keyLabel"></div>
+          <div class="settings-group">
+            <div class="setting-card">
+              <div>
+                <div class="setting-title">Browser / search preset</div>
+                <div class="setting-desc">Choose which search engine Cocofanto uses when you type normal words.</div>
+              </div>
+              <div class="select-wrap">
+                <select id="browserPreset" onchange="saveBrowserPreset()">
+                  <option value="chrome">Chrome · Google</option>
+                  <option value="edge">Edge · Bing</option>
+                  <option value="duck">DuckDuckGo</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="setting-card">
+              <div>
+                <div class="setting-title">Return shortcut</div>
+                <div class="setting-desc">Choose a key that returns to Aiden Tutoring.</div>
+              </div>
+              <div class="select-wrap">
+                <select id="backKey" onchange="saveBackKey()">
+                  <option value="Escape">Esc</option>
+                  <option value="F2">F2</option>
+                  <option value="F4">F4</option>
+                  <option value="F8">F8</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-status">
+            <span class="status-pill" id="browserLabel"></span>
+            <span class="status-pill" id="keyLabel"></span>
+          </div>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
   </div>
 </section>
 
@@ -213,8 +448,20 @@ function setCocofantoIdentity(){
   document.getElementById("favicon").href = "/img/tutoring-icon.svg";
 }
 
+function showCocoView(view){
+  const home = document.getElementById("cocoHomePanel");
+  const settings = document.getElementById("cocoSettingsPanel");
+  home.classList.toggle("active", view === "home");
+  settings.classList.toggle("active", view === "settings");
+}
+
 function showCocoSettings(){
-  document.getElementById("cocoSettings").classList.toggle("hidden");
+  showCocoView("settings");
+}
+
+function showCocoHome(){
+  showCocoView("home");
+  requestAnimationFrame(() => document.getElementById("q").focus({preventScroll:true}));
 }
 
 function openCocofanto(addHistory = true){
@@ -227,11 +474,22 @@ function openCocofanto(addHistory = true){
 
   document.getElementById("tutoring").classList.add("hidden");
   document.getElementById("cocofanto").classList.remove("hidden");
+  showCocoView("home");
+  replayCocofantoIntro();
   window.scrollTo(0,0);
   document.getElementById("q").focus({preventScroll:true});
 
   // Pre-warm the already-existing UV/service-worker path while the user is on Cocofanto.
   ensureProxyReady().catch(err => console.debug("Proxy prewarm deferred:", err));
+}
+
+function replayCocofantoIntro(){
+  const items = document.querySelectorAll("#cocoHomePanel .load-in");
+  items.forEach(el => {
+    el.style.animation = "none";
+    void el.offsetWidth;
+    el.style.animation = "";
+  });
 }
 
 function backToTutoring(){
@@ -247,6 +505,7 @@ function showCocofantoFromHistory(){
   sessionStorage.setItem("cocofantoView","1");
   document.getElementById("tutoring").classList.add("hidden");
   document.getElementById("cocofanto").classList.remove("hidden");
+  showCocoView("home");
   setCocofantoIdentity();
   window.scrollTo(0,0);
 }
