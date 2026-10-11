@@ -256,6 +256,16 @@ button{cursor:pointer}
 .settings-status{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
 .status-pill{padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08);font-size:11px;color:rgba(235,242,255,.68)}
 
+
+/* Dedicated Games view */
+#cocoGamePanel{flex-direction:column;min-height:0;overflow:hidden;padding:0 0 10px}
+.game-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:4px 2px 12px}
+.game-toolbar-copy{text-align:left}.game-toolbar h2{margin:0 0 3px;font-size:22px;letter-spacing:-.025em}.game-toolbar p{margin:0;color:var(--c-muted);font-size:12px}.game-toolbar-actions{display:flex;gap:8px;flex-wrap:wrap}
+.game-shell{position:relative;flex:1;min-height:0;width:100%;overflow:hidden;border:1px solid rgba(255,255,255,.12);border-radius:22px;background:#000;box-shadow:0 20px 60px rgba(0,0,0,.30)}
+.game-shell iframe{display:block;width:100%;height:100%;min-height:calc(100vh - 142px);border:0;background:#000}
+.game-loading{position:absolute;inset:0;display:grid;place-items:center;background:#000;color:rgba(255,255,255,.72);font-size:14px;letter-spacing:.02em;pointer-events:none;transition:opacity .22s ease}.game-loading.hidden-load{opacity:0}
+@media(max-width:760px){.game-toolbar{align-items:flex-start;flex-direction:column}.game-toolbar-actions{width:100%}.game-toolbar-actions .glass{flex:1}.game-shell iframe{min-height:calc(100vh - 190px)}}
+
 @keyframes glideUp{from{opacity:0;transform:translateY(11px) scale(.995)}to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes panelIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @keyframes topBarIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
@@ -302,7 +312,7 @@ html.low-power .glass,
 html.low-power .search,
 html.low-power .settings-page,
 html.low-power .c-brand{backdrop-filter:none!important}
-html.low-power #cocofanto::before{opacity:.32;filter:saturate(.82) brightness(.56)}
+html.low-power #cocofanto::before{opacity:.48;filter:saturate(.98) brightness(.70) contrast(1.06)}
 </style>
 </head>
 <body>
@@ -360,6 +370,7 @@ html.low-power #cocofanto::before{opacity:.32;filter:saturate(.82) brightness(.5
       <div class="c-brand"><img src="/img/cocofanto.png" alt="" decoding="async" width="34" height="34"><span>Cocofanto</span></div>
       <div class="c-actions">
         <button class="glass" onclick="openPreviousSite()">← Previous</button>
+        <button class="glass" onclick="showCocoGame()">Games</button>
         <button class="glass" onclick="showCocoSettings()">Settings</button>
         <button class="glass" onclick="backToTutoring()">Tutoring</button>
       </div>
@@ -435,6 +446,20 @@ html.low-power #cocofanto::before{opacity:.32;filter:saturate(.82) brightness(.5
           </div>
         </div>
       </section>
+
+      <section id="cocoGamePanel" class="c-panel-view">
+        <div class="game-toolbar">
+          <div class="game-toolbar-copy"><h2>Geometry Dash</h2><p>Geometry Dash Lite · embedded from geometrydash-lite.io.</p></div>
+          <div class="game-toolbar-actions">
+            <button class="glass" onclick="toggleGameFullscreen()">Fullscreen</button>
+            <button class="glass" onclick="showCocoHome()">← Back to search</button>
+          </div>
+        </div>
+        <div class="game-shell" id="geometryDashShell">
+          <iframe id="geometryDashFrame" title="Geometry Dash" src="about:blank" allow="autoplay; fullscreen; gamepad" referrerpolicy="strict-origin-when-cross-origin" onload="geometryDashLoaded()"></iframe>
+          <div class="game-loading" id="geometryDashLoading">Loading Geometry Dash…</div>
+        </div>
+      </section>
     </main>
   </div>
 </section>
@@ -454,13 +479,27 @@ function setCocofantoIdentity(){
 function showCocoView(view){
   const home = document.getElementById("cocoHomePanel");
   const settings = document.getElementById("cocoSettingsPanel");
+  const games = document.getElementById("cocoGamePanel");
   home.classList.toggle("active", view === "home");
   settings.classList.toggle("active", view === "settings");
+  games.classList.toggle("active", view === "game");
+  if(view !== "game") unloadGeometryDash();
 }
 
 function showCocoSettings(){
   showCocoView("settings");
 }
+
+function showCocoGame(){
+  showCocoView("game");
+  const frame=document.getElementById("geometryDashFrame");
+  const loading=document.getElementById("geometryDashLoading");
+  loading.classList.remove("hidden-load");
+  if(!frame.dataset.gameLoaded){frame.dataset.gameLoaded="1";frame.src="https://geometrydash-lite.io/";}
+}
+function geometryDashLoaded(){const frame=document.getElementById("geometryDashFrame");if(frame&&frame.dataset.gameLoaded)document.getElementById("geometryDashLoading").classList.add("hidden-load");}
+function unloadGeometryDash(){const frame=document.getElementById("geometryDashFrame");if(!frame||!frame.dataset.gameLoaded)return;frame.src="about:blank";delete frame.dataset.gameLoaded;document.getElementById("geometryDashLoading").classList.remove("hidden-load");}
+async function toggleGameFullscreen(){const shell=document.getElementById("geometryDashShell");try{if(!document.fullscreenElement)await shell.requestFullscreen();else await document.exitFullscreen();}catch(err){console.error("Fullscreen failed:",err);}}
 
 function showCocoHome(){
   showCocoView("home");
