@@ -6,7 +6,7 @@
 <title>Aiden Tutoring</title>
 <link id="favicon" rel="icon" type="image/svg+xml" href="/img/tutoring-icon.svg">
 <link rel="preload" as="image" href="/img/cocofanto.png">
-<link rel="preload" as="image" href="/img/cocofanto-bg-v4.jpg?v=6">
+<link rel="preload" as="image" href="/img/cocofanto-bg-v4.jpg?v=7">
 <link rel="preload" as="script" href="/uv/uv.bundle.js">
 <link rel="preload" as="script" href="/uv/uv.config.js">
 <script defer src="/uv/uv.bundle.js"></script>
@@ -37,19 +37,19 @@ button{cursor:pointer}
   --glass:rgba(8,12,29,.78);--glass2:rgba(12,17,39,.90);--accent:#7aa8ff;--accent2:#a98bff;
   position:fixed;inset:0;background:#03050d;color:var(--white);overflow:hidden;
 }
-#cocofanto::before{content:"";position:absolute;inset:-18px;background:url("/img/cocofanto-bg-v4.jpg?v=6") center/cover no-repeat;opacity:.40;filter:saturate(1.05) brightness(.70) contrast(1.06);transform:scale(1.035);pointer-events:none}
-#cocofanto::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 42% 5%,rgba(75,119,255,.14),transparent 30%),linear-gradient(180deg,rgba(2,4,12,.48),rgba(2,4,12,.82) 48%,rgba(1,2,7,.95));pointer-events:none}
+#cocofanto::before{content:"";position:absolute;inset:-18px;background:url("/img/cocofanto-bg-v4.jpg?v=7") center/cover no-repeat;opacity:.48;filter:saturate(.98) brightness(.70) contrast(1.06);transform:scale(1.035);pointer-events:none}
+#cocofanto::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 34%,rgba(34,82,160,.17),transparent 34%),linear-gradient(180deg,rgba(1,3,10,.44) 0%,rgba(2,4,13,.68) 58%,rgba(1,2,8,.90) 100%);pointer-events:none}
 .c-app{position:relative;z-index:1;height:100%;min-height:0}.c-main{height:100%;min-height:0}.c-panel-view{display:none;width:100%;height:100%;min-height:0}.c-panel-view.active{display:flex;animation:panelIn .22s ease both}
 
 /* Browser shell */
 #cocoBrowserPanel{padding:0}
-.browser-shell{width:100%;height:100%;min-height:0;display:flex;flex-direction:column;background:rgba(2,4,12,.50)}
-.browser-chrome{flex:0 0 auto;background:linear-gradient(180deg,rgba(7,11,26,.94),rgba(7,10,23,.89));border-bottom:1px solid rgba(129,165,255,.14);box-shadow:0 12px 34px rgba(0,0,0,.22);backdrop-filter:blur(15px);position:relative;z-index:20}
+.browser-shell{width:100%;height:100%;min-height:0;display:flex;flex-direction:column;background:transparent}
+.browser-chrome{flex:0 0 auto;background:linear-gradient(180deg,rgba(18,29,67,.72),rgba(7,13,33,.62));border-bottom:1px solid rgba(156,188,255,.17);box-shadow:0 12px 34px rgba(0,0,0,.18);backdrop-filter:blur(18px) saturate(125%);position:relative;z-index:20}
 .tab-row{height:51px;display:flex;align-items:flex-end;gap:7px;padding:6px 10px 0;border-bottom:1px solid rgba(255,255,255,.055);overflow:hidden}
 .browser-brand{height:38px;display:flex;align-items:center;gap:7px;padding:0 8px 0 4px;flex:0 0 auto;color:rgba(239,244,255,.86);font-weight:750;font-size:13px;letter-spacing:-.02em}.browser-brand img{width:29px;height:29px;object-fit:contain;filter:drop-shadow(0 6px 12px rgba(0,0,0,.25))}
 .tab-strip{display:flex;align-items:flex-end;gap:5px;min-width:0;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;flex:1}.tab-strip::-webkit-scrollbar{display:none}
 .browser-tab{height:38px;min-width:156px;max-width:238px;display:flex;align-items:center;gap:8px;padding:0 9px 0 11px;border:1px solid transparent;border-bottom:0;border-radius:13px 13px 0 0;background:rgba(255,255,255,.035);color:rgba(226,234,255,.66);transition:background .16s ease,color .16s ease,border-color .16s ease,transform .16s ease;user-select:none;flex:0 1 220px}
-.browser-tab:hover{background:rgba(255,255,255,.075);color:#fff}.browser-tab.active{background:rgba(17,24,50,.96);color:#fff;border-color:rgba(133,168,255,.16);box-shadow:0 -5px 22px rgba(49,87,180,.08)}
+.browser-tab:hover{background:rgba(255,255,255,.085);color:#fff}.browser-tab.active{background:linear-gradient(180deg,rgba(86,124,221,.24),rgba(20,31,67,.50));color:#fff;border-color:rgba(164,194,255,.20);box-shadow:0 -5px 22px rgba(49,87,180,.10)}
 .tab-status{width:9px;height:9px;border-radius:50%;background:rgba(140,164,219,.55);flex:0 0 auto}.browser-tab.loading .tab-status{border:2px solid rgba(153,183,255,.25);border-top-color:#90b5ff;background:transparent;animation:spin .75s linear infinite}
 .tab-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12.5px;font-weight:650;flex:1}.tab-close{width:22px;height:22px;border:0;border-radius:7px;background:transparent;color:inherit;opacity:.62;padding:0;line-height:20px}.tab-close:hover{background:rgba(255,255,255,.10);opacity:1}
 .new-tab-btn{width:38px;height:38px;border:1px solid transparent;border-radius:12px 12px 0 0;background:transparent;color:rgba(235,241,255,.72);font-size:20px;line-height:1;margin-right:auto}.new-tab-btn:hover{background:rgba(255,255,255,.075);color:#fff}
@@ -57,17 +57,17 @@ button{cursor:pointer}
 .nav-row{height:62px;display:flex;align-items:center;gap:8px;padding:8px 11px 10px}
 .nav-group,.nav-actions{display:flex;align-items:center;gap:6px;flex:0 0 auto}
 .nav-btn{width:40px;height:40px;border:1px solid var(--border);border-radius:12px;background:rgba(255,255,255,.045);color:#eef3ff;font-size:17px;display:grid;place-items:center;padding:0;transition:.16s ease}.nav-btn:hover{background:rgba(255,255,255,.095);border-color:rgba(255,255,255,.18);transform:translateY(-1px)}.nav-btn:active{transform:translateY(0) scale(.97)}
-.address-shell{height:42px;min-width:0;flex:1;display:flex;align-items:center;gap:9px;padding:0 13px;border:1px solid rgba(255,255,255,.10);border-radius:14px;background:rgba(3,6,16,.55);transition:border-color .18s ease,background .18s ease,box-shadow .18s ease}.address-shell:focus-within{border-color:rgba(122,168,255,.48);background:rgba(5,9,22,.82);box-shadow:0 0 0 4px rgba(85,132,255,.07)}
+.address-shell{height:42px;min-width:0;flex:1;display:flex;align-items:center;gap:9px;padding:0 13px;border:1px solid rgba(173,201,255,.17);border-radius:14px;background:linear-gradient(90deg,rgba(37,62,123,.24),rgba(17,29,70,.34),rgba(65,44,110,.21));box-shadow:inset 0 1px 0 rgba(255,255,255,.035);transition:border-color .18s ease,background .18s ease,box-shadow .18s ease}.address-shell:focus-within{border-color:rgba(154,191,255,.55);background:linear-gradient(90deg,rgba(49,78,145,.35),rgba(19,34,79,.46),rgba(79,52,125,.30));box-shadow:0 0 0 4px rgba(92,139,255,.08),inset 0 1px 0 rgba(255,255,255,.05)}
 .address-dot{width:10px;height:10px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 0 14px rgba(122,168,255,.38);flex:0 0 auto}.address-shell.loading .address-dot{border:2px solid rgba(160,183,255,.25);border-top-color:#9abbff;background:transparent;animation:spin .75s linear infinite;box-shadow:none}
 #addressInput{min-width:0;flex:1;border:0;outline:0;background:transparent;color:#f8faff;font-size:14px;font-weight:550;padding:0}#addressInput::placeholder{color:rgba(225,235,255,.42)}
 .go-btn{border:0;border-radius:10px;background:linear-gradient(180deg,#eef4ff,#cfdcff);color:#0b1020;font-weight:800;font-size:12px;padding:8px 13px;box-shadow:0 6px 18px rgba(0,0,0,.14)}.go-btn:hover{filter:brightness(1.04)}
 .browser-progress{height:2px;overflow:hidden;background:transparent}.browser-progress-bar{height:100%;width:0;background:linear-gradient(90deg,#6aa3ff,#9c86ff,#67d9ff);box-shadow:0 0 15px rgba(105,166,255,.72);opacity:0}.browser-progress.loading .browser-progress-bar{opacity:1;animation:loadBar 1.15s ease-in-out infinite}
 
-.browser-viewport{position:relative;flex:1;min-height:0;overflow:hidden;background:#090c14}
-.frame-host,.new-tab-page{position:absolute;inset:0}.frame-host{z-index:2}.browser-frame{position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff;display:none}.browser-frame.active{display:block}
-.new-tab-page{z-index:1;display:flex;align-items:center;justify-content:center;overflow:auto;padding:26px;background:radial-gradient(circle at 50% 34%,rgba(78,123,255,.13),transparent 32%)}
+.browser-viewport{position:relative;flex:1;min-height:0;overflow:hidden;background:transparent}
+.frame-host,.new-tab-page{position:absolute;inset:0}.frame-host{z-index:2;pointer-events:none}.browser-frame{position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff;display:none;pointer-events:auto}.browser-frame.active{display:block}
+.new-tab-page{z-index:3;display:flex;align-items:center;justify-content:center;overflow:auto;padding:26px;background:radial-gradient(circle at 50% 34%,rgba(112,151,255,.10),transparent 30%),linear-gradient(180deg,rgba(3,6,18,.08),rgba(2,4,13,.28));backdrop-filter:blur(2px)}
 .new-tab-card{width:min(760px,94vw);text-align:center}.new-tab-logo{width:142px;height:142px;object-fit:contain;filter:drop-shadow(0 18px 34px rgba(0,0,0,.28));animation:float 7s ease-in-out infinite}.new-tab-card h1{font-size:clamp(42px,6vw,68px);line-height:.98;letter-spacing:-.055em;margin:7px 0 7px}.new-tab-card p{margin:0 0 21px;color:var(--muted);font-size:13px}
-.new-search{height:55px;display:flex;align-items:center;gap:8px;padding:6px 6px 6px 16px;margin:auto;border:1px solid rgba(255,255,255,.12);border-radius:18px;background:rgba(8,12,29,.66);backdrop-filter:blur(12px);box-shadow:0 20px 52px rgba(0,0,0,.24)}.new-search:focus-within{border-color:rgba(122,168,255,.45);box-shadow:0 22px 58px rgba(0,0,0,.28),0 0 0 4px rgba(85,132,255,.06)}
+.new-search{height:55px;display:flex;align-items:center;gap:8px;padding:6px 6px 6px 16px;margin:auto;border:1px solid rgba(185,209,255,.18);border-radius:18px;background:linear-gradient(90deg,rgba(18,31,73,.55),rgba(8,15,38,.60),rgba(54,36,88,.44));backdrop-filter:blur(14px) saturate(120%);box-shadow:0 20px 52px rgba(0,0,0,.20),inset 0 1px 0 rgba(255,255,255,.04)}.new-search:focus-within{border-color:rgba(153,190,255,.54);box-shadow:0 22px 58px rgba(0,0,0,.24),0 0 0 4px rgba(85,132,255,.08)}
 #newTabQ{flex:1;min-width:0;border:0;outline:0;background:transparent;color:#fff;font-size:15px}#newTabQ::placeholder{color:rgba(225,235,255,.46)}
 .primary{height:42px;border:0;border-radius:13px;padding:0 18px;background:linear-gradient(180deg,#f7f9ff,#dce6ff);color:#0b1020;font-weight:800;font-size:13px}.quick-links{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:13px}.quick-btn{border:1px solid rgba(255,255,255,.09);border-radius:999px;background:rgba(255,255,255,.05);color:#eef3ff;padding:8px 12px;font-size:12px}.quick-btn:hover{background:rgba(255,255,255,.10)}
 .load-note{position:absolute;left:50%;top:18px;transform:translateX(-50%);z-index:5;padding:8px 12px;border-radius:999px;background:rgba(5,8,20,.78);border:1px solid rgba(255,255,255,.09);color:rgba(239,244,255,.78);font-size:11px;pointer-events:none;opacity:0;transition:opacity .15s}.load-note.show{opacity:1}
@@ -112,7 +112,7 @@ html.low-power .browser-chrome,html.low-power .new-search,html.low-power .settin
             </div>
             <div id="addressShell" class="address-shell">
               <span class="address-dot"></span>
-              <input id="addressInput" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Search or enter a URL" onkeydown="if(event.key==='Enter')navigateAddress()">
+              <input id="addressInput" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Search or enter a URL">
               <button class="go-btn" onclick="navigateAddress()">Go</button>
             </div>
             <div class="nav-actions">
@@ -129,7 +129,7 @@ html.low-power .browser-chrome,html.low-power .new-search,html.low-power .settin
             <div class="new-tab-card">
               <img class="new-tab-logo" src="/img/cocofanto.png" alt="Cocofanto" width="142" height="142" decoding="async">
               <h1>Cocofanto</h1><p>Search or enter a URL.</p>
-              <div class="new-search"><input id="newTabQ" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Search or enter a URL" onkeydown="if(event.key==='Enter')goNewTab()"><button class="primary" onclick="goNewTab()">Search</button></div>
+              <div class="new-search"><input id="newTabQ" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Search or enter a URL"><button class="primary" onclick="goNewTab()">Search</button></div>
               <div class="quick-links"><button class="quick-btn" onclick="openInActiveTab('https://www.youtube.com/')">▶ YouTube</button><button class="quick-btn" onclick="openInActiveTab('https://www.wikipedia.org/')">Wikipedia</button><button class="quick-btn" onclick="openInActiveTab('https://duckduckgo.com/')">DuckDuckGo</button></div>
             </div>
           </div>
@@ -267,6 +267,9 @@ window.addEventListener("beforeunload",()=>{for(const t of tabs)syncTabFromFrame
 
 if((navigator.hardwareConcurrency||8)<=4)document.documentElement.classList.add("low-power");
 restoreTabs();updateSettingsLabels();
+// Robust search bindings for the new-tab and upper address bars.
+$("newTabQ")?.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();goNewTab()}});
+$("addressInput")?.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();navigateAddress()}});
 // Start the service worker immediately so the first navigation does not pay the setup cost.
 ensureProxyReady().catch(()=>{});
 if(location.hash==="#cocofanto"||sessionStorage.getItem("cocofantoView")==="1"){

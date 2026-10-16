@@ -28,3 +28,11 @@ This build keeps the existing Ultraviolet/Bare routing but replaces the Cocofant
 These changes reduce Cocofanto's own UI/setup overhead. Remote page speed still depends on the destination site, network latency, and the Bare/proxy route.
 
 This build does not add DevTools hiding, URL cloaking, or filter-evasion behavior.
+
+
+## v7 fixes
+- Fixed the new-tab search field/buttons being covered by the empty iframe host.
+- Restored the brighter Cocofanto liquid-prism background treatment from the earlier UI.
+- Made the browser chrome, tabs and upper address/search bar translucent so they blend into the Cocofanto background.
+- Added explicit Enter-key bindings for both search fields.
+- Kept active website frames interactive while the empty frame host no longer intercepts clicks.
