@@ -1,0 +1,7 @@
+file	original	gzip	brotli
+main/main.html	39354	11150	9629
+main/uv/uv.bundle.js	1770734	282361	225521
+main/uv/uv.config.js	310	164	141
+main/uv/uv.sw.js	25212	6304	5515
+main/uv/uv.handler.js	39255	6481	5697
+main/uv/uv.index.js	874	530	430

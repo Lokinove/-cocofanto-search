@@ -36,3 +36,17 @@ This build does not add DevTools hiding, URL cloaking, or filter-evasion behavio
 - Made the browser chrome, tabs and upper address/search bar translucent so they blend into the Cocofanto background.
 - Added explicit Enter-key bindings for both search fields.
 - Kept active website frames interactive while the empty frame host no longer intercepts clicks.
+
+
+## v8 performance pass
+This build keeps the v7 appearance and browser tabs. Performance changes are limited to ordinary loading/hosting optimization:
+- Reuses a live browser iframe when navigating within the same tab instead of destroying and recreating it.
+- Sets the real proxied URL before a new iframe is inserted, eliminating an unnecessary about:blank navigation.
+- Deduplicates simultaneous frame-creation work for a tab.
+- Reuses an existing service-worker registration when available.
+- Preloads the remaining UV runtime files used by the first proxied navigation.
+- Ships Brotli and gzip copies of the large local UV runtime and serves them when supported.
+- Keeps inbound HTTP connections alive longer and prefers IPv4 first to avoid some hosting/DNS stalls.
+- Does not add filter-evasion, traffic hiding, or DevTools concealment.
+
+The biggest local file is uv.bundle.js; precompression substantially reduces its first-download transfer size when the hosting path does not already compress it. Remote-site speed still depends on the target site, hosting route, and Bare/UV processing.

@@ -1,3 +1,4 @@
+
 const $ = id => document.getElementById(id);
 const MAX_TABS = 8;
 let proxyReadyPromise = null;
@@ -23,7 +24,7 @@ function resolveInput(raw){
 }
 function cleanTitle(s){s=(s||"").replace(/\s+/g," ").trim();return s.length>42?s.slice(0,39)+"…":s}
 function activeTab(){return tabs.find(t=>t.id===activeTabId)||null}
-function makeTab(data={}){return {id:data.id||tabSequence++,title:data.title||"New Tab",target:data.target||"",loading:false,frame:null,lastActive:Date.now(),hibernated:!!data.target}}
+function makeTab(data={}){return {id:data.id||tabSequence++,title:data.title||"New Tab",target:data.target||"",loading:false,frame:null,framePromise:null,lastActive:Date.now(),hibernated:!!data.target}}
 
 function createTab(activate=true,data={}){
   if(tabs.length>=MAX_TABS){alert("Cocofanto supports up to "+MAX_TABS+" tabs at once.");return null}
@@ -38,35 +39,93 @@ function syncActiveUI(){const tab=activeTab();if(!tab)return;for(const t of tabs
 
 async function ensureTabFrame(tab){
   if(tab.frame){for(const t of tabs){if(t.frame)t.frame.classList.toggle("active",t.id===activeTabId)}return tab.frame}
+  if(tab.framePromise)return tab.framePromise;
   if(!tab.target)return null;
   tab.loading=true;if(tab.id===activeTabId)setActiveLoading(true);else renderTabs();
-  try{
-    const config=await ensureProxyReady();
-    if(tab.frame)return tab.frame;
-    const frame=document.createElement("iframe");frame.className="browser-frame"+(tab.id===activeTabId?" active":"");frame.title=tab.title;frame.setAttribute("allow","autoplay; fullscreen; clipboard-read; clipboard-write");frame.setAttribute("referrerpolicy","strict-origin-when-cross-origin");
-    frame.addEventListener("load",()=>{tab.loading=false;tab.hibernated=false;syncTabFromFrame(tab);if(tab.id===activeTabId)syncActiveUI();else renderTabs();persistTabs();enforceLiveLimit()});
-    tab.frame=frame;$("frameHost").appendChild(frame);frame.src=config.prefix+config.encodeUrl(tab.target);tab.hibernated=false;return frame;
-  }catch(err){tab.loading=false;if(tab.id===activeTabId)setActiveLoading(false);console.error("Cocofanto navigation failed:",err);alert("Cocofanto could not start the existing web service. Check the console.");return null}
+  tab.framePromise=(async()=>{
+    try{
+      const config=await ensureProxyReady();
+      if(tab.frame)return tab.frame;
+      const frame=document.createElement("iframe");
+      frame.className="browser-frame"+(tab.id===activeTabId?" active":"");
+      frame.title=tab.title;
+      frame.setAttribute("allow","autoplay; fullscreen; clipboard-read; clipboard-write");
+      frame.setAttribute("referrerpolicy","strict-origin-when-cross-origin");
+      frame.setAttribute("loading","eager");
+      frame.setAttribute("fetchpriority","high");
+      frame.addEventListener("load",()=>{tab.loading=false;tab.hibernated=false;syncTabFromFrame(tab);if(tab.id===activeTabId)syncActiveUI();else renderTabs();persistTabs();enforceLiveLimit()});
+      // Set the real URL before insertion so the browser does not first create an unnecessary about:blank navigation.
+      frame.src=config.prefix+config.encodeUrl(tab.target);
+      tab.frame=frame;
+      $("frameHost").appendChild(frame);
+      tab.hibernated=false;
+      return frame;
+    }catch(err){
+      tab.loading=false;if(tab.id===activeTabId)setActiveLoading(false);
+      console.error("Cocofanto navigation failed:",err);
+      alert("Cocofanto could not start the existing web service. Check the console.");
+      return null;
+    }finally{tab.framePromise=null}
+  })();
+  return tab.framePromise;
 }
-function destroyTabFrame(tab){if(!tab?.frame)return;syncTabFromFrame(tab);try{tab.frame.src="about:blank"}catch{}tab.frame.remove();tab.frame=null;tab.hibernated=!!tab.target;tab.loading=false}
+function destroyTabFrame(tab){if(!tab)return;tab.framePromise=null;if(!tab.frame)return;syncTabFromFrame(tab);try{tab.frame.src="about:blank"}catch{}tab.frame.remove();tab.frame=null;tab.hibernated=!!tab.target;tab.loading=false}
 function syncTabFromFrame(tab){if(!tab?.frame)return;try{const title=tab.frame.contentDocument?.title?.trim();if(title&&title!=="Aiden Tutoring")tab.title=title}catch{}try{const href=tab.frame.contentWindow.location.href;const decoded=decodeProxyHref(href);if(decoded)tab.target=decoded}catch{}if(tab.id===activeTabId)$("addressInput").value=tab.target||""}
 function decodeProxyHref(href){try{const u=new URL(href,location.href);const cfg=window.__uv$config;if(!cfg||!u.pathname.startsWith(cfg.prefix))return "";const encoded=u.pathname.slice(cfg.prefix.length);return cfg.decodeUrl(encoded)}catch{return ""}}
 function getLiveTabLimit(){const saved=Number(localStorage.getItem("cocofantoLiveTabs"));if([2,4,6].includes(saved))return saved;return document.documentElement.classList.contains("low-power")?2:4}
 function enforceLiveLimit(){const limit=getLiveTabLimit();let live=tabs.filter(t=>t.frame);if(live.length<=limit)return;const victims=live.filter(t=>t.id!==activeTabId).sort((a,b)=>a.lastActive-b.lastActive);while(live.length>limit&&victims.length){destroyTabFrame(victims.shift());live=tabs.filter(t=>t.frame)}renderTabs();persistTabs()}
 
-function navigateTab(tab,input){const resolved=typeof input==="string"?resolveInput(input):input;if(!tab||!resolved)return;destroyTabFrame(tab);tab.target=resolved.target;tab.title=resolved.title||"Loading…";tab.lastActive=Date.now();sessionStorage.setItem("cocofantoLastTarget",tab.target);persistTabs();syncActiveUI();ensureTabFrame(tab)}
+async function navigateTab(tab,input){
+  const resolved=typeof input==="string"?resolveInput(input):input;if(!tab||!resolved)return;
+  tab.target=resolved.target;tab.title=resolved.title||"Loading…";tab.lastActive=Date.now();tab.loading=true;
+  sessionStorage.setItem("cocofantoLastTarget",tab.target);persistTabs();syncActiveUI();
+  try{
+    const config=await ensureProxyReady();
+    const nextSrc=config.prefix+config.encodeUrl(tab.target);
+    if(tab.frame){
+      // Reuse the existing browsing context. This avoids tearing down/recreating the iframe and its page context on every search/address navigation.
+      tab.frame.title=tab.title;
+      tab.frame.src=nextSrc;
+      tab.hibernated=false;
+      if(tab.id===activeTabId)setActiveLoading(true);else renderTabs();
+      return;
+    }
+    await ensureTabFrame(tab);
+  }catch(err){tab.loading=false;if(tab.id===activeTabId)setActiveLoading(false);console.error("Cocofanto navigation failed:",err)}
+}
 function navigateAddress(){navigateTab(activeTab(),$("addressInput").value)}
 function goNewTab(){navigateTab(activeTab(),$("newTabQ").value)}
 function openInActiveTab(url){navigateTab(activeTab(),{target:url,title:(()=>{try{return new URL(url).hostname.replace(/^www\./,"")}catch{return url}})()})}
 function blankActiveTab(){const tab=activeTab();if(!tab)return;destroyTabFrame(tab);tab.target="";tab.title="New Tab";tab.hibernated=false;persistTabs();syncActiveUI()}
-function reloadActiveTab(){const tab=activeTab();if(!tab||!tab.target)return;if(!tab.frame){ensureTabFrame(tab);return}tab.loading=true;setActiveLoading(true);try{tab.frame.contentWindow.location.reload()}catch{const src=tab.frame.src;tab.frame.src="about:blank";requestAnimationFrame(()=>tab.frame.src=src)}}
+function reloadActiveTab(){const tab=activeTab();if(!tab||!tab.target)return;if(!tab.frame){ensureTabFrame(tab);return}tab.loading=true;setActiveLoading(true);try{tab.frame.contentWindow.location.reload()}catch{ensureProxyReady().then(config=>{tab.frame.src=config.prefix+config.encodeUrl(tab.target)}).catch(()=>{tab.loading=false;setActiveLoading(false)})}}
 function tabHistory(delta){const tab=activeTab();if(!tab?.frame)return;tab.loading=true;setActiveLoading(true);try{tab.frame.contentWindow.history.go(delta);setTimeout(()=>syncTabFromFrame(tab),350)}catch{tab.loading=false;setActiveLoading(false)}}
 
 function persistTabs(){try{sessionStorage.setItem("cocofantoTabsV6",JSON.stringify(tabs.map(t=>({id:t.id,title:t.title,target:t.target}))));sessionStorage.setItem("cocofantoActiveTabV6",String(activeTabId||""))}catch{}}
 function restoreTabs(){try{const raw=JSON.parse(sessionStorage.getItem("cocofantoTabsV6")||"[]");if(Array.isArray(raw)&&raw.length){tabs=raw.slice(0,MAX_TABS).map(x=>makeTab(x));tabSequence=Math.max(...tabs.map(t=>Number(t.id)||0),0)+1;const savedId=Number(sessionStorage.getItem("cocofantoActiveTabV6"));activeTabId=tabs.some(t=>t.id===savedId)?savedId:tabs[0].id;renderTabs();syncActiveUI();return}}catch{}const t=makeTab();tabs=[t];activeTabId=t.id;renderTabs();syncActiveUI()}
 
 function waitForUvConfig(timeoutMs=5000){if(window.__uv$config)return Promise.resolve(window.__uv$config);return new Promise((resolve,reject)=>{const start=performance.now();(function check(){if(window.__uv$config)return resolve(window.__uv$config);if(performance.now()-start>timeoutMs)return reject(new Error("Ultraviolet config did not load."));requestAnimationFrame(check)})()})}
-async function ensureProxyReady(){if(proxyReadyPromise)return proxyReadyPromise;proxyReadyPromise=(async()=>{if(!("serviceWorker" in navigator))throw new Error("Service workers are unavailable.");const config=await waitForUvConfig();const registration=await navigator.serviceWorker.register("/sw.js",{scope:config.prefix,updateViaCache:"imports"});if(registration.active)return config;const worker=registration.installing||registration.waiting;if(!worker)return config;if(worker.state==="activated")return config;await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error("Service worker activation timed out.")),6500);worker.addEventListener("statechange",()=>{if(worker.state==="activated"){clearTimeout(timer);resolve()}else if(worker.state==="redundant"){clearTimeout(timer);reject(new Error("Service worker became redundant."))}})});return config})().catch(err=>{proxyReadyPromise=null;throw err});return proxyReadyPromise}
+async function ensureProxyReady(){
+  if(proxyReadyPromise)return proxyReadyPromise;
+  proxyReadyPromise=(async()=>{
+    if(!("serviceWorker" in navigator))throw new Error("Service workers are unavailable.");
+    const config=await waitForUvConfig();
+    let registration=await navigator.serviceWorker.getRegistration(config.prefix);
+    if(!registration)registration=await navigator.serviceWorker.register("/sw.js",{scope:config.prefix,updateViaCache:"imports"});
+    if(registration.active)return config;
+    const worker=registration.installing||registration.waiting;
+    if(!worker)return config;
+    if(worker.state==="activated")return config;
+    await new Promise((resolve,reject)=>{
+      const timer=setTimeout(()=>reject(new Error("Service worker activation timed out.")),6500);
+      worker.addEventListener("statechange",()=>{
+        if(worker.state==="activated"){clearTimeout(timer);resolve()}
+        else if(worker.state==="redundant"){clearTimeout(timer);reject(new Error("Service worker became redundant."))}
+      });
+    });
+    return config;
+  })().catch(err=>{proxyReadyPromise=null;throw err});
+  return proxyReadyPromise;
+}
 
 function showCocoView(view){currentCocoView=view;$("cocoBrowserPanel").classList.toggle("active",view==="browser");$("cocoSettingsPanel").classList.toggle("active",view==="settings");$("cocoGamePanel").classList.toggle("active",view==="game");if(view!=="game")unloadGeometryDash();if(view==="browser")syncActiveUI()}
 function showCocoHome(){showCocoView("browser")}
@@ -106,6 +165,9 @@ window.addEventListener("beforeunload",()=>{for(const t of tabs)syncTabFromFrame
 
 if((navigator.hardwareConcurrency||8)<=4)document.documentElement.classList.add("low-power");
 restoreTabs();updateSettingsLabels();
+// Robust search bindings for the new-tab and upper address bars.
+$("newTabQ")?.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();goNewTab()}});
+$("addressInput")?.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();navigateAddress()}});
 // Start the service worker immediately so the first navigation does not pay the setup cost.
 ensureProxyReady().catch(()=>{});
 if(location.hash==="#cocofanto"||sessionStorage.getItem("cocofantoView")==="1"){
